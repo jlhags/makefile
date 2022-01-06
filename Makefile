@@ -2,19 +2,7 @@
 SHELL:=/bin/bash
 VERSION=$(shell git rev-parse --short HEAD)
 
-#Set these to match your environment
-NAME:=project_name
-DOCKER_REGISTRY:=docker_registry
-BASE_LANG:=go
-SRC_DIR:=./
-ENV:=dev
-TAG:=$(ENV)
-BUILD_TYPE:=docker
-TESTPATH= ./...
-AWS_REGION=aws_region
-COVERAGEREPORTHTML=./coverage.html
-CONFIGNAME=API_CONF
-CONFIGVALUE=../testconfig.json
+include config.mk
 
 ##@ Dependencies
 
@@ -39,13 +27,13 @@ else
 	$(info Option not available for language)
 endif
 
-coverage: ## Run code coverage
+coverage: ## Run code coverage coverage-report
 ifeq ($(BASE_LANG),go)
 	cd $(SRC_DIR);go test -cover $(TESTPATH)
 else
 	$(info Option not available for language)
 endif
-coverage-report: coverage
+coverage-report: coverage ## Create code coverage report
 ifeq ($(BASE_LANG),go)
 	cd $(SRC_DIR); go test -coverprofile=coverage.out $(TESTPATH)
 	cd $(SRC_DIR); go tool cover -html=coverage.out -o $(COVERAGEREPORTHTML)
@@ -87,7 +75,7 @@ else
 	$(info Option not available for build type)
 endif
 
-run: 
+run: ## Run the project locally
 ifeq ($(BASE_LANG),go)
 	cd $(SRC_DIR); ENV=dev $(CONFIGNAME)=$(CONFIGVALUE) AWS_REGION=$(AWS_REGION) go run ./main.go
 else
