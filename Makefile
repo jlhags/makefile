@@ -1,7 +1,3 @@
-.DEFAULT_GOAL:=help
-SHELL:=/bin/bash
-VERSION=$(shell git rev-parse --short HEAD)
-
 include config.mk
 
 ##@ Dependencies
@@ -61,16 +57,16 @@ clean: ## Cleanup the project folders
 
 build: clean deps ## Build the project
 ifeq ($(BUILD_TYPE),docker)
-	docker build --build-arg GITHUB_TOKEN --build-arg GITHUB_LOGIN -t $(REGISTRY)/$(NAME):$(VERSION) -f Dockerfile . 
-	docker tag $(REGISTRY)/$(NAME):$(VERSION) $(REGISTRY)/$(NAME):$(TAG)
+	docker build --build-arg GITHUB_TOKEN --build-arg GITHUB_LOGIN -t $(DOCKER_REGISTRY)/$(NAME):$(VERSION) -f Dockerfile . 
+	docker tag $(DOCKER_REGISTRY)/$(NAME):$(VERSION) $(DOCKER_REGISTRY)/$(NAME):$(TAG)
 else
 	$(info Option not available for build type)
 endif
 
 publish: docker-login ## Publish the project
 ifeq ($(BUILD_TYPE),docker)
-	docker push $(REGISTRY)/$(NAME):$(VERSION)
-	docker push $(REGISTRY)/$(NAME):$(TAG)
+	docker push $(DOCKER_REGISTRY)/$(NAME):$(VERSION)
+	docker push $(DOCKER_REGISTRY)/$(NAME):$(TAG)
 else
 	$(info Option not available for build type)
 endif
@@ -85,7 +81,7 @@ endif
 
 
 docker-login:
-	aws ecr get-login-password --region $(AWS_REGION) | docker login --username AWS --password-stdin $(REGISTRY)
+	aws ecr get-login-password --region $(AWS_REGION) | docker login --username AWS --password-stdin $(DOCKER_REGISTRY)
 	aws ecr-public get-login-password --region $(AWS_REGION) | docker login --username AWS --password-stdin public.ecr.aws
 
 
