@@ -1,5 +1,5 @@
 include config.mk
-
+MREMOTE=$(shell git remote | grep makefile)
 ##@ Dependencies
 
 .PHONY: deps
@@ -92,6 +92,11 @@ docker-login:
 help:  ## Display this help
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
-update-makefile: ## Get latest version of makefile
+addmakefilerepo:
+ifeq ($(MREMOTE),)
+	git remote add makefile git@github.com:jlhags/makefile.git
+endif
+
+update-makefile: addmakefilerepo ## Get latest version of makefile
 	git fetch makefile
 	git checkout makefile/main Makefile
