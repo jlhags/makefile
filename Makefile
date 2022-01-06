@@ -1,15 +1,20 @@
 .DEFAULT_GOAL:=help
 SHELL:=/bin/bash
+VERSION=$(shell git rev-parse --short HEAD)
+
+#Set these to match your environment
 NAME:=project_name
 DOCKER_REGISTRY:=docker_registry
 BASE_LANG:=go
 SRC_DIR:=./
-VERSION=$(shell git rev-parse --short HEAD)
 ENV:=dev
 TAG:=$(ENV)
 BUILD_TYPE:=docker
 TESTPATH= ./...
 AWS_REGION=aws_region
+COVERAGEREPORTHTML=./coverage.html
+CONFIGNAME=API_CONF
+CONFIGVALUE=../testconfig.json
 
 ##@ Dependencies
 
@@ -25,7 +30,7 @@ endif
 
 ##@ Test
 
-.PHONY: unit-test functional-test coverage
+.PHONY: unit-test functional-test coverage coverage-report
 
 unit-test: ## Run unit tests
 ifeq ($(BASE_LANG),go)
@@ -35,9 +40,18 @@ else
 endif
 
 coverage: ## Run code coverage
+ifeq ($(BASE_LANG),go)
 	cd $(SRC_DIR);go test -cover $(TESTPATH)
-
-
+else
+	$(info Option not available for language)
+endif
+coverage-report: coverage
+ifeq ($(BASE_LANG),go)
+	cd $(SRC_DIR); go test -coverprofile=coverage.out $(TESTPATH)
+	cd $(SRC_DIR); go tool cover -html=coverage.out -o $(COVERAGEREPORTHTML)
+else
+	$(info Option not available for language)
+endif
 functional-test: ## Run functional tests
 ifeq ($(BUILD_TYPE),docker)
 	docker-compose  up --build --abort-on-container-exit --exit-code-from functional-test --renew-anon-volumes --remove-orphan functional-test
@@ -75,7 +89,7 @@ endif
 
 run: 
 ifeq ($(BASE_LANG),go)
-	cd $(SRC_DIR); ENV=dev API_CONF=../testconfig.json AWS_REGION=$(AWS_REGION) go run ./main.go
+	cd $(SRC_DIR); ENV=dev $(CONFIGNAME)=$(CONFIGVALUE) AWS_REGION=$(AWS_REGION) go run ./main.go
 else
 	$(info Option not available for language)
 endif
