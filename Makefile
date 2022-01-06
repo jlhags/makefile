@@ -32,7 +32,7 @@ else
 endif
 coverage-report: coverage ## Create code coverage report
 ifeq ($(BASE_LANG),go)
-	cd $(SRC_DIR); go tool cover -html=$(PWD)/coverage.out -o $(COVERAGEREPORTHTML)
+	cd $(SRC_DIR); go tool cover -html=$(PWD)/coverage.out -o $(PWD)/$(COVERAGEREPORTHTML)
 else
 	$(info Option not available for language)
 endif
