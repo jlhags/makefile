@@ -6,7 +6,7 @@ include config.mk
 
 deps:  ## Check/get dependencies
 ifeq ($(BASE_LANG),go)
-	cd $(SRC_DIR); go mod tidy; go mod vendor
+	cd $(SRC_DIR); go mod tidy && go mod vendor
 else
 	$(info Option not available for language)
 endif
