@@ -1,5 +1,6 @@
 include config.mk
 MREMOTE=$(shell git remote | grep makefile)
+PWD=$(shell pwd)
 ##@ Dependencies
 
 .PHONY: deps
@@ -25,14 +26,13 @@ endif
 
 coverage: ## Run code coverage coverage-report
 ifeq ($(BASE_LANG),go)
-	cd $(SRC_DIR);go test -cover $(TESTPATH)
+	cd $(SRC_DIR);go test -coverprofile=$(PWD)/coverage.out $(TESTPATH)
 else
 	$(info Option not available for language)
 endif
 coverage-report: coverage ## Create code coverage report
 ifeq ($(BASE_LANG),go)
-	cd $(SRC_DIR); go test -coverprofile=coverage.out $(TESTPATH)
-	cd $(SRC_DIR); go tool cover -html=coverage.out -o $(COVERAGEREPORTHTML)
+	go tool cover -html=coverage.out -o $(COVERAGEREPORTHTML)
 else
 	$(info Option not available for language)
 endif
