@@ -50,7 +50,11 @@ endif
 
 clean: ## Cleanup the project folders
 	$(info Cleaning up things)
-
+ifeq ($(BASE_LANG),go)
+	rm coverage.html coverage.out
+else
+        $(info Option not available for language)
+endif
 ##@ Building
 
 .PHONY: build publish run
