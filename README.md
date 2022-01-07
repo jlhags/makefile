@@ -9,7 +9,7 @@ If you are adding this makefile to your project you will need to run the followi
 ```bash
 git remote add makefile git@github.com:jlhags/makefile.git
 git fetch makefile
-git checkout makefile/main makefile
+git checkout makefile/main Makefile
 git checkout makefile/main config.mk
 ```
 ### Configure
