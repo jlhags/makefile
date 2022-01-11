@@ -38,7 +38,7 @@ else
 endif
 functional-test: ## Run functional tests
 ifeq ($(BUILD_TYPE),docker)
-	docker-compose  up --build --abort-on-container-exit --exit-code-from functional-test --renew-anon-volumes --remove-orphan functional-test
+	docker-compose  up --build --abort-on-container-exit --exit-code-from functional-test --renew-anon-volumes --remove-orphan
 else
 	$(info Option not available for build type)
 endif
