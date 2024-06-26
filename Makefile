@@ -51,7 +51,7 @@ endif
 clean: ## Cleanup the project folders
 	$(info Cleaning up things)
 ifeq ($(BASE_LANG),go)
-	rm coverage.html
+	rm -f coverage.html
 else
         $(info Option not available for language)
 endif
@@ -61,7 +61,7 @@ endif
 
 build: clean deps ## Build the project
 ifeq ($(BUILD_TYPE),docker)
-	docker build --build-arg GITHUB_TOKEN --build-arg GITHUB_LOGIN -t $(DOCKER_REGISTRY)/$(NAME):$(VERSION) -f Dockerfile . 
+	docker buildx build --build-arg GITHUB_TOKEN --build-arg GITHUB_LOGIN -t $(DOCKER_REGISTRY)/$(NAME):$(VERSION) -f Dockerfile . 
 	docker tag $(DOCKER_REGISTRY)/$(NAME):$(VERSION) $(DOCKER_REGISTRY)/$(NAME):$(TAG)
 else
 	$(info Option not available for build type)
@@ -85,8 +85,8 @@ endif
 
 
 docker-login:
-	aws ecr get-login-password --region $(AWS_REGION) | docker login --username AWS --password-stdin $(DOCKER_REGISTRY)
-	aws ecr-public get-login-password --region $(AWS_REGION) | docker login --username AWS --password-stdin public.ecr.aws
+	aws ecr get-login-password --region $(AWS__DEFAULT_REGION) | docker login --username AWS --password-stdin $(DOCKER_REGISTRY)
+	aws ecr-public get-login-password --region $(AWS_DEFAULT_REGION) | docker login --username AWS --password-stdin public.ecr.aws
 
 
 ##@ Helpers
